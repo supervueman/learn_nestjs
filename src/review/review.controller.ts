@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { REVIEW_NOT_FOUND } from './review.constatnts';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/createReview.dto';
@@ -15,6 +16,17 @@ import {
 @Controller('review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
+
+  @Get('create')
+  async createTest(@Body() dto: CreateReviewDto) {
+    return this.reviewService.create({
+      name: 'Test',
+      title: 'Title',
+      description: 'Description',
+      rating: 5,
+      productId: new Types.ObjectId().toHexString(),
+    });
+  }
 
   @Post('create')
   async create(@Body() dto: CreateReviewDto) {
