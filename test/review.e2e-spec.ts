@@ -1,3 +1,4 @@
+import { REVIEW_NOT_FOUND } from './../src/review/review.constatnts';
 import { Types, disconnect } from 'mongoose';
 import { CreateReviewDto } from './../src/review/dto/createReview.dto';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -28,7 +29,7 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/review/create (POST)', async () => {
+  it('/review/create (POST) - success', async () => {
     return request(app.getHttpServer())
       .post('/review/create')
       .send(testDto)
@@ -36,6 +37,39 @@ describe('AppController (e2e)', () => {
       .then(({ body }: request.Response) => {
         createdId = body._id;
         expect(createdId).toBeDefined();
+      });
+  });
+
+  it('/review/by-product/:productId (GET) - success', async () => {
+    return request(app.getHttpServer())
+      .get(`/review/by-product/${productId}`)
+      .expect(200)
+      .then(({ body }: request.Response) => {
+        expect(body.length).toBe(1);
+      });
+  });
+
+  it('/review/by-product/:productId (GET) - fail', async () => {
+    return request(app.getHttpServer())
+      .get(`/review/by-product/${new Types.ObjectId().toHexString()}`)
+      .expect(200)
+      .then(({ body }: request.Response) => {
+        expect(body.length).toBe(0);
+      });
+  });
+
+  it('/review/:id (DELETE) - sucess', async () => {
+    return request(app.getHttpServer())
+      .delete(`/review/${createdId}`)
+      .expect(200);
+  });
+
+  it('/review/:id (DELETE) - fail', async () => {
+    return request(app.getHttpServer())
+      .delete(`/review/${createdId}`)
+      .expect(404, {
+        statusCode: 404,
+        message: REVIEW_NOT_FOUND,
       });
   });
 
