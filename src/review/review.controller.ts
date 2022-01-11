@@ -11,23 +11,15 @@ import {
   HttpStatus,
   Param,
   Post,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 
 @Controller('review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @Get('create')
-  async createTest(@Body() dto: CreateReviewDto) {
-    return this.reviewService.create({
-      name: 'Test',
-      title: 'Title',
-      description: 'Description',
-      rating: 5,
-      productId: new Types.ObjectId().toHexString(),
-    });
-  }
-
+  @UsePipes(new ValidationPipe())
   @Post('create')
   async create(@Body() dto: CreateReviewDto) {
     return this.reviewService.create(dto);
