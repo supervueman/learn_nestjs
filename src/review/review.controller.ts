@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { REVIEW_NOT_FOUND } from './review.constatnts';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/createReview.dto';
@@ -11,11 +10,13 @@ import {
   HttpStatus,
   Param,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
-@Controller('review') //
+@Controller('review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
@@ -25,6 +26,7 @@ export class ReviewController {
     return this.reviewService.create(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('by-product/:productId')
   async getByProduct(@Param('productId') productId: string) {
     return this.reviewService.findByProductId(productId);
